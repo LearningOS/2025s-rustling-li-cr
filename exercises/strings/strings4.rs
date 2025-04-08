@@ -17,10 +17,10 @@ fn string(arg: String) {
 }
 
 fn main() {
-    ???("blue");
-    ???("red".to_string());
-    ???(String::from("hi"));
-    ???("rust is fun!".to_owned());
+    string_slice("blue");
+    string("red".to_string());
+    string(String::from("hi"));
+    ("rust is fun!".to_owned());
     ???("nice weather".into());
     ???(format!("Interpolation {}", "Station"));
     ???(&String::from("abc")[0..1]);
