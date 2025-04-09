@@ -14,7 +14,7 @@ pub trait Licensed {
     }
 }
 
-struct SomeSoftware {x:i32}
+struct SomeSoftware {}
 
 struct OtherSoftware {}
 
