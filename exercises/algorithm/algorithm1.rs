@@ -2,11 +2,9 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
-use std::ptr::NonNull;
-use std::vec::*;
+use std::ptr::{NonNull};
 
 #[derive(Debug)]
 struct Node<T> {
@@ -29,13 +27,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T : std::cmp::PartialOrd> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T:std::cmp::PartialOrd> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,15 +67,54 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+
+    pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self {
+        let mut ans = Self::new();
+        // 用两个指针，分别指向 list_a 和 list_b 的起始节点
+        let mut p = list_a.start;
+        let mut q = list_b.start;
+
+        // 当任意一个列表还有节点未遍历时
+        while p.is_some() || q.is_some() {
+
+            let t: Option<NonNull<Node<T>>>;
+            match (p, q) {
+                (Some(pa), Some(qb)) => unsafe {
+
+                    if (*pa.as_ptr()).val < ((*qb.as_ptr()).val) {
+                        t = Some(pa);
+                        p = (*pa.as_ptr()).next;
+                        
+                    } else {
+                        t = Some(qb);
+                        q = (*qb.as_ptr()).next;
+                    }
+                },
+                (Some(pa), None) => unsafe {
+                    t = Some(pa);
+                    p = (*pa.as_ptr()).next;
+                },
+                (None, Some(qb)) => unsafe {
+                    t = Some(qb);
+                    q = (*qb.as_ptr()).next;
+                },
+                (None, None) => break,
+            }
+            
+            
+            unsafe {
+                t.unwrap().as_mut().next = None; // 将当前节点的 next 指针置为 None
+                match ans.end {
+                    None => ans.start = t,
+                    Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = t },
+                }
+                ans.end = t; // 更新 ans 的 end 指针
+            }
+            
+            ans.length += 1;
         }
-	}
+        ans
+    }
 }
 
 impl<T> Display for LinkedList<T>

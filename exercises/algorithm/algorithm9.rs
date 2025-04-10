@@ -2,7 +2,7 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+// I AM NOT 
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -36,8 +36,37 @@ where
         self.len() == 0
     }
 
+    pub fn bubble_up(&mut self, idx: usize) {
+        let mut current = idx;
+        while current > 1 {
+            let parent = self.parent_idx(current);
+            if (self.comparator)(&self.items[current], &self.items[parent]) {
+                self.items.swap(current, parent);
+                current = parent;
+            } else {
+                break;
+            }
+        }
+    }
+    pub fn bubble_down(&mut self, idx: usize) {
+        let mut current = idx;
+        while self.children_present(current) {
+            let smallest_child = self.smallest_child_idx(current);
+            if (self.comparator)(&self.items[smallest_child], &self.items[current]) {
+                self.items.swap(smallest_child, current);
+                current = smallest_child;
+            } else {
+                break;
+            }
+        }
+    }
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.count += 1;
+        if self.items.len() <= self.count {
+            self.items.push(T::default());
+        }
+        self.items[self.count] = value;
+        self.bubble_up(self.count);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +86,18 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left_child = self.left_child_idx(idx);
+        let right_child = self.right_child_idx(idx);
+
+        if right_child > self.count {
+            return left_child;
+        }
+
+        if (self.comparator)(&self.items[left_child], &self.items[right_child]) {
+            left_child
+        } else {
+            right_child
+        }
     }
 }
 
@@ -84,8 +123,16 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            None
+        } else {
+            let mut root: T = T::default();
+            std::mem::swap(&mut root, &mut self.items[1]);
+            self.items.swap(1, self.count);
+            self.count -= 1;
+            self.bubble_down(1);
+            Some(root)
+        }
     }
 }
 
